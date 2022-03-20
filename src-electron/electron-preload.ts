@@ -1,6 +1,6 @@
-import { Sequelize } from 'sequelize';
-import * as path from 'path';
 import { contextBridge } from 'electron';
+import { Todo } from './orm/entity/todo.entity';
+import { User } from './orm/entity/user.entity';
 
 /**
  * This file is used specifically for security reasons.
@@ -20,13 +20,11 @@ import { contextBridge } from 'electron';
  *   })
  */
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: path.join(__dirname, 'db.db3'),
-});
-
 contextBridge.exposeInMainWorld('db', {
-  getAllTodos: () => {
-    //sequelize.
-  },
+    getAllTodos: (): Todo[] => {
+        return Todo.findAll();
+    },
+    getAllUsers: (): User[] => {
+        return User.findAll();
+    },
 });
