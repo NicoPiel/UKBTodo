@@ -3,7 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { logger } from './logger/logger';
 import { sequelize } from './utility';
-import { User, Todo } from './orm/entity/entities';
+import { Todo, User } from './orm/entity/entities';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -52,104 +52,7 @@ function createWindow() {
 app.whenReady().then(async () => {
     createWindow();
 
-    try {
-        try {
-            await User.sync({ alter: true });
-        } catch (error) {
-            logger.log('error', 'Something went wrong while synching Users.');
-            logger.log('error', error);
-        }
-
-        try {
-            await Todo.sync({ alter: true });
-        } catch (error) {
-            logger.log('error', 'Something went wrong while synching Todos.');
-            logger.log('error', error);
-        }
-
-        try {
-            const usersCount = await User.count();
-
-            if (usersCount === 0) {
-                try {
-                    await sequelize.transaction(async (t) => {
-                        try {
-                            await User.create({
-                                name: 'Dragi',
-                                email: 'dragica.kalakovic@ukbonn.de',
-                            });
-                            await User.create({
-                                name: 'Kathi',
-                                email: 'katharina.mueller@ukbonn.de',
-                            });
-                            await User.create({
-                                name: 'Hannah',
-                                email: 'hannah.langenohl@ukbonn.de',
-                            });
-                            await User.create({
-                                name: 'Ina',
-                                email: 'ina.olschewski@ukbonn.de',
-                            });
-                        } catch (error) {
-                            logger.log('error', 'Something went wrong during user creation');
-                            logger.log('error', error);
-                        }
-                    });
-
-                    logger.info('Default users created.');
-                } catch (error) {
-                    logger.log('error', 'An error occurred while creating the default users.');
-                    logger.log('error', error);
-                }
-            }
-
-            const todoCount = await Todo.count();
-
-            if (todoCount === 0) {
-                try {
-                    await sequelize.transaction(async (t) => {
-                        try {
-                            await Todo.create({
-                                description: 'Beispiel',
-                                issued_by: 'Beispiel',
-                            });
-                            await Todo.create({
-                                description: 'Beispiel',
-                                issued_by: 'Beispiel',
-                            });
-                            await Todo.create({
-                                description: 'Beispiel',
-                                issued_by: 'Beispiel',
-                            });
-                            await Todo.create({
-                                description: 'Beispiel',
-                                issued_by: 'Beispiel',
-                            });
-                            await Todo.create({
-                                description: 'Beispiel',
-                                issued_by: 'Beispiel',
-                            });
-                        } catch (error) {
-                            logger.log('error', 'Something went wrong during todo creation');
-                            logger.log('error', error);
-                        }
-                    });
-
-                    logger.info('Default todos created.');
-                } catch (error) {
-                    logger.log('error', 'An error occurred while creating the default todos.');
-                    logger.log('error', error);
-                }
-            }
-        } catch (error) {
-            logger.log('error', 'An error occurred while counting the default users.');
-            logger.log('error', error);
-        }
-
-        logger.info('Done.');
-    } catch (error) {
-        logger.log('error', 'Connection could not be established.');
-    }
+    await setup();
 });
 
 app.on('window-all-closed', () => {
@@ -163,3 +66,106 @@ app.on('activate', () => {
         createWindow();
     }
 });
+
+async function setup() {
+    try {
+        try {
+            await User.sync({ alter: true });
+        } catch (error) {
+            logger.log('error', 'Something went wrong while syncing Users.');
+            logger.log('error', error);
+        }
+
+        try {
+            await Todo.sync({ alter: true });
+        } catch (error) {
+            logger.log('error', 'Something went wrong while syncing Todos.');
+            logger.log('error', error);
+        }
+
+        await createDefaultUsers();
+        await createDefaultTodos();
+
+        logger.info('Done.');
+    } catch (error) {
+        logger.log('error', 'Connection could not be established.');
+    }
+}
+
+async function createDefaultUsers() {
+    const usersCount = await User.count();
+
+    if (usersCount === 0) {
+        try {
+            await sequelize.transaction(async (t) => {
+                try {
+                    await User.create({
+                        name: 'Dragi',
+                        email: 'dragica.kalakovic@ukbonn.de',
+                    });
+                    await User.create({
+                        name: 'Kathi',
+                        email: 'katharina.mueller@ukbonn.de',
+                    });
+                    await User.create({
+                        name: 'Hannah',
+                        email: 'hannah.langenohl@ukbonn.de',
+                    });
+                    await User.create({
+                        name: 'Ina',
+                        email: 'ina.olschewski@ukbonn.de',
+                    });
+                } catch (error) {
+                    logger.log('error', 'Something went wrong during user creation');
+                    logger.log('error', error);
+                }
+            });
+
+            logger.info('Default users created.');
+        } catch (error) {
+            logger.log('error', 'An error occurred while creating the default users.');
+            logger.log('error', error);
+        }
+    }
+}
+
+async function createDefaultTodos() {
+    const todoCount = await Todo.count();
+
+    if (todoCount === 0) {
+        try {
+            await sequelize.transaction(async (t) => {
+                try {
+                    await Todo.create({
+                        description: 'Beispiel',
+                        issued_by: 'Beispiel',
+                    });
+                    await Todo.create({
+                        description: 'Beispiel',
+                        issued_by: 'Beispiel',
+                    });
+                    await Todo.create({
+                        description: 'Beispiel',
+                        issued_by: 'Beispiel',
+                    });
+                    await Todo.create({
+                        description: 'Beispiel',
+                        issued_by: 'Beispiel',
+                    });
+                    await Todo.create({
+                        description: 'Beispiel',
+                        issued_by: 'Beispiel',
+                    });
+                } catch (error) {
+                    logger.log('error', 'Something went wrong during todo creation');
+                    logger.log('error', error);
+                }
+            });
+
+            logger.info('Default todos created.');
+        } catch (error) {
+            logger.log('error', 'An error occurred while creating the default todos.');
+            logger.log('error', error);
+        }
+    }
+}
