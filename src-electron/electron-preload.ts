@@ -21,8 +21,8 @@ import { logger } from './logger/logger';
  */
 
 export interface IMyAPI {
-    findAllTodos: () => Promise<Todo>;
-    findAllUsers: () => Promise<User>;
+    findAllTodos: () => Todo[];
+    findAllUsers: () => User[];
 }
 
 declare global {
@@ -34,10 +34,10 @@ declare global {
 contextBridge.exposeInMainWorld('myAPI', {
     findAllTodos: async () => {
         logger.info('Finding all todos.');
-        await ipcRenderer.invoke('findAllTodos');
+        return ipcRenderer.invoke('findAllTodos');
     },
     findAllUsers: async () => {
         logger.info('Finding all users.');
-        await ipcRenderer.invoke('findAllUsers');
+        return ipcRenderer.invoke('findAllUsers');
     },
 });
