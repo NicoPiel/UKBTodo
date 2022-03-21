@@ -1,4 +1,4 @@
-import { app, BrowserWindow, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron';
 import * as os from 'os';
 import * as path from 'path';
 import { logger } from './logger/logger';
@@ -13,6 +13,17 @@ try {
         require('fs').unlinkSync(path.join(app.getPath('userData'), 'DevTools Extensions'));
     }
 } catch (_) {}
+
+// Catch events
+
+function catchEvents() {
+    ipcMain.handle('findAllTodos', async () => {
+        return Todo.findAll();
+    });
+    ipcMain.handle('findAllUsers', async () => {
+        return User.findAll();
+    });
+}
 
 let mainWindow;
 
@@ -52,6 +63,7 @@ function createWindow() {
 app.whenReady().then(async () => {
     createWindow();
 
+    catchEvents();
     await setup();
 });
 
@@ -70,14 +82,14 @@ app.on('activate', () => {
 async function setup() {
     try {
         try {
-            await User.sync({ alter: true });
+            await User.sync({ force: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Users.');
             logger.log('error', error);
         }
 
         try {
-            await Todo.sync({ alter: true });
+            await Todo.sync({ force: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Todos.');
             logger.log('error', error);

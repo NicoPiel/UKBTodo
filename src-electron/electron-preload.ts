@@ -1,5 +1,6 @@
-import { contextBridge } from 'electron';
+import { contextBridge, ipcRenderer } from 'electron';
 import { User, Todo } from './orm/entity/entities';
+import { logger } from './logger/logger';
 
 /**
  * This file is used specifically for security reasons.
@@ -19,11 +20,24 @@ import { User, Todo } from './orm/entity/entities';
  *   })
  */
 
-contextBridge.exposeInMainWorld('db', {
-    findAllTodos: (): Todo[] => {
-        return Todo.findAll();
+export interface IMyAPI {
+    findAllTodos: () => Promise<Todo>;
+    findAllUsers: () => Promise<User>;
+}
+
+declare global {
+    interface Window {
+        myAPI: IMyAPI;
+    }
+}
+
+contextBridge.exposeInMainWorld('myAPI', {
+    findAllTodos: async () => {
+        logger.info('Finding all todos.');
+        await ipcRenderer.invoke('findAllTodos');
     },
-    findAllUsers: (): User[] => {
-        return User.findAll();
+    findAllUsers: async () => {
+        logger.info('Finding all users.');
+        await ipcRenderer.invoke('findAllUsers');
     },
 });

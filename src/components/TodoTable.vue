@@ -5,6 +5,10 @@
             :rows="rows"
             :columns="columns"
             row-key="id"
+            fullscreen
+            virtual-scroll
+            v-model:pagination="pagination"
+            :rows-per-page-options="[0]"
         />
     </div>
 </template>
@@ -33,7 +37,8 @@ const columns = [
     {name: 'deadline', label: 'Zu erledigen bis', field: (row: Todo) => row.deadline, sortable: true},
 ];
 
-const rows = window.db.findAllTodos();
+// Todo: This is the issue
+const rows = window.myAPI.findAllTodos();
 
 export default {
     setup() {

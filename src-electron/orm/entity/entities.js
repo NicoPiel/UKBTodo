@@ -56,12 +56,12 @@ Todo.init(
 
 // Relationships
 
-User.hasMany(Todo);
+/*User.hasMany(Todo);
 Todo.belongsTo(User, {
     foreignKey: {
         name: 'assigned_to',
     },
-});
+});*/
 
 // Export
 
