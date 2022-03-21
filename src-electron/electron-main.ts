@@ -3,8 +3,7 @@ import * as os from 'os';
 import * as path from 'path';
 import { logger } from './logger/logger';
 import { sequelize } from './utility';
-import { User } from './orm/entity/user.entity';
-import { Todo } from './orm/entity/todo.entity';
+import { User, Todo } from './orm/entity/entities';
 
 // needed in case process is undefined under Linux
 const platform = process.platform || os.platform();
@@ -54,17 +53,17 @@ app.whenReady().then(async () => {
     createWindow();
 
     try {
-        await sequelize.authenticate();
-
         try {
             await User.sync({ alter: true });
         } catch (error) {
+            logger.log('error', 'Something went wrong while synching Users.');
             logger.log('error', error);
         }
 
         try {
             await Todo.sync({ alter: true });
         } catch (error) {
+            logger.log('error', 'Something went wrong while synching Todos.');
             logger.log('error', error);
         }
 
@@ -73,7 +72,7 @@ app.whenReady().then(async () => {
 
             if (usersCount === 0) {
                 try {
-                    const result = await sequelize.transaction(async (t) => {
+                    await sequelize.transaction(async (t) => {
                         try {
                             await User.create({
                                 name: 'Dragi',
@@ -103,12 +102,51 @@ app.whenReady().then(async () => {
                     logger.log('error', error);
                 }
             }
+
+            const todoCount = await Todo.count();
+
+            if (todoCount === 0) {
+                try {
+                    await sequelize.transaction(async (t) => {
+                        try {
+                            await Todo.create({
+                                description: 'Beispiel',
+                                issued_by: 'Beispiel',
+                            });
+                            await Todo.create({
+                                description: 'Beispiel',
+                                issued_by: 'Beispiel',
+                            });
+                            await Todo.create({
+                                description: 'Beispiel',
+                                issued_by: 'Beispiel',
+                            });
+                            await Todo.create({
+                                description: 'Beispiel',
+                                issued_by: 'Beispiel',
+                            });
+                            await Todo.create({
+                                description: 'Beispiel',
+                                issued_by: 'Beispiel',
+                            });
+                        } catch (error) {
+                            logger.log('error', 'Something went wrong during todo creation');
+                            logger.log('error', error);
+                        }
+                    });
+
+                    logger.info('Default todos created.');
+                } catch (error) {
+                    logger.log('error', 'An error occurred while creating the default todos.');
+                    logger.log('error', error);
+                }
+            }
         } catch (error) {
             logger.log('error', 'An error occurred while counting the default users.');
             logger.log('error', error);
         }
 
-        logger.info('Database connection established.');
+        logger.info('Done.');
     } catch (error) {
         logger.log('error', 'Connection could not be established.');
     }

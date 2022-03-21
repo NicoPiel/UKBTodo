@@ -1,6 +1,5 @@
 import { contextBridge } from 'electron';
-import { Todo } from './orm/entity/todo.entity';
-import { User } from './orm/entity/user.entity';
+import { User, Todo } from './orm/entity/entities';
 
 /**
  * This file is used specifically for security reasons.
@@ -21,10 +20,10 @@ import { User } from './orm/entity/user.entity';
  */
 
 contextBridge.exposeInMainWorld('db', {
-    getAllTodos: (): Todo[] => {
+    findAllTodos: (): Todo[] => {
         return Todo.findAll();
     },
-    getAllUsers: (): User[] => {
+    findAllUsers: (): User[] => {
         return User.findAll();
     },
 });

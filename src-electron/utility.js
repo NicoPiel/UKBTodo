@@ -1,8 +1,9 @@
 import * as path from 'path';
 import { Sequelize } from 'sequelize';
 import { logger } from './logger/logger';
+import { app } from 'electron';
 
-export const DB_PATH = path.join(__dirname, 'db.db3');
+export const DB_PATH = path.join(app.getAppPath(), 'db.db3');
 
 export let sequelize = new Sequelize({
     dialect: 'sqlite',
@@ -18,4 +19,7 @@ export let sequelize = new Sequelize({
 (async () => {
     logger.info('Authenticating..');
     await sequelize.authenticate();
+
+    console.log('DB File: ' + DB_PATH);
+    logger.info('Database connection established.');
 })();
