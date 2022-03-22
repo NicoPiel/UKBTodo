@@ -17,10 +17,12 @@ try {
 // Catch events
 
 function catchEvents() {
-    ipcMain.handle('findAllTodos', async () => {
+    ipcMain.handle('findAllTodos', () => {
+        logger.info('handling findAllTodos event');
         return Todo.findAll();
     });
-    ipcMain.handle('findAllUsers', async () => {
+    ipcMain.handle('findAllUsers', () => {
+        logger.info('handling findAllUsers event');
         return User.findAll();
     });
 }
@@ -61,10 +63,10 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
-    createWindow();
-
     catchEvents();
     await setup();
+
+    createWindow();
 });
 
 app.on('window-all-closed', () => {

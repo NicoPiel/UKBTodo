@@ -32,11 +32,11 @@ declare global {
 }
 
 contextBridge.exposeInMainWorld('myAPI', {
-    findAllTodos: async () => {
+    findAllTodos: () => {
         logger.info('Finding all todos.');
         return ipcRenderer.invoke('findAllTodos');
     },
-    findAllUsers: async () => {
+    findAllUsers: () => {
         logger.info('Finding all users.');
         return ipcRenderer.invoke('findAllUsers');
     },

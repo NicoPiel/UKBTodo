@@ -21,29 +21,42 @@ const columns = [
     {
         name: 'id',
         label: '#',
-        field: (row: Todo) => row.id,
+        field: (row) => row.dataValues.id,
     },
     {
         name: 'description',
         required: true,
         label: 'Beschreibung',
         align: 'left',
-        field: (row: Todo) => row.description,
-        format: (val) => `${val}`,
-        sortable: true,
+        field: (row) => row.dataValues.description,
     },
-    {name: 'issued_by', align: 'center', label: 'Für', field: (row: Todo) => row.issued_by, sortable: true},
+    {name: 'issued_by', align: 'left', label: 'Für', field: (row) => row.dataValues.issued_by, sortable: true},
     //{name: 'assigned_to', label: 'Zugewiesen zu', field: (row: Todo) => row.assigned_to, sortable: true},
-    {name: 'deadline', label: 'Zu erledigen bis', field: (row: Todo) => row.deadline, sortable: true},
+    {name: 'deadline', align: 'left', label: 'Zu erledigen bis', field: (row) => row.dataValues.deadline, sortable: true},
 ];
 
 // Todo: This is the issue
-const rows = window.myAPI.findAllTodos();
-console.log(rows);
+
+async function getRows() {
+    return window.myAPI.findAllTodos();
+}
 
 
 export default {
-    setup() {
+    async setup() {
+       console.log('Getting rows');
+        const rows = await getRows();
+
+        console.log('Got rows.');
+
+        for (const row of rows) {
+            console.log(row.dataValues.id);
+        }
+
+        console.log(rows);
+        console.log('Printed rows.');
+
+
         return {
             columns,
             rows,
