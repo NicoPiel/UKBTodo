@@ -68,12 +68,12 @@ app.whenReady().then(async () => {
             responseHeaders: {
                 ...details.responseHeaders,
                 'Content-Security-Policy': [
-                    "default-src 'none'" +
-                        " script-src 'self'" +
-                        " connect-src 'self'" +
-                        " img-src 'self'" +
-                        " style-src 'self' 'unsafe-inline'" +
-                        " font-src 'self'",
+                    "default-src 'none';" +
+                        " script-src 'self';" +
+                        " connect-src 'self';" +
+                        " img-src 'self';" +
+                        " style-src 'self' 'unsafe-inline';" +
+                        " font-src 'self';",
                 ],
             },
         });

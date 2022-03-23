@@ -1,9 +1,6 @@
 <template>
     <q-page class="row items-center justify-evenly">
-        <todo-table></todo-table>
-        <q-page-sticky position="bottom" :offset="[18, 18]">
-            <q-btn fab icon="add" color="accent"/>
-        </q-page-sticky>
+        <TodoTable></TodoTable>
     </q-page>
 </template>
 

@@ -13,9 +13,13 @@
             :rows-per-page-options="[0]"
         />
     </div>
+
+    <q-page-sticky position="bottom" :offset="[18, 18]">
+        <q-btn v-ripple fab icon="add" color="accent"/>
+    </q-page-sticky>
 </template>
 
-<script lang="ts">
+<script>
 import {ref} from 'vue';
 
 const columns = [
@@ -61,8 +65,11 @@ async function fillRows() {
 }
 
 export default {
+    // Todo: can't be async
     async setup() {
         rows = await fillRows();
+
+        console.log(rows)
 
         return {
             columns,
@@ -80,9 +87,9 @@ export default {
     /* height or max-height is important */
     max-height: 1080px
 
-    .q-table__top,
-    .q-table__bottom,
-    thead tr:first-child th
+    /*.q-table__top, */
+    /*.q-table__bottom,*/
+    /*thead tr:first-child th*/
     /* bg color is important for th; just specify one */
     background-color: #fff
 
@@ -90,6 +97,16 @@ export default {
         position: sticky
         z-index: 1
     /* this will be the loading indicator */
+
+
+
+
+
+
+
+
+
+
 
 
 
