@@ -25,6 +25,10 @@ function catchEvents() {
         logger.info('handling findAllUsers event');
         return User.findAll();
     });
+    ipcMain.handle('findUserById', (event, id) => {
+        logger.info('handling findUserById event');
+        return User.findOne({ where: { id: id } });
+    });
 }
 
 let mainWindow;
@@ -100,14 +104,14 @@ app.on('activate', () => {
 async function setup() {
     try {
         try {
-            await User.sync({ alter: true });
+            await User.sync({ force: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Users.');
             logger.log('error', error);
         }
 
         try {
-            await Todo.sync({ alter: true });
+            await Todo.sync({ force: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Todos.');
             logger.log('error', error);
@@ -166,12 +170,17 @@ async function createDefaultTodos() {
     if (todoCount == 0) {
         try {
             await sequelize.transaction(async (t) => {
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 10; i++) {
                     try {
-                        await Todo.create({
+                        const newTodo: Todo = Todo.build({
                             description: 'Beispiel',
                             issued_by: 'Beispiel',
+                            deadline: new Date(2022, 5, 1),
                         });
+
+                        newTodo.UserId = Math.floor(Math.random() * (await User.count()) + 1);
+
+                        await newTodo.save();
                     } catch (error) {
                         logger.log('error', 'Something went wrong during todo creation');
                         logger.log('error', error);

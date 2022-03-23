@@ -1,26 +1,29 @@
 <template>
     <div class="q-pa-md">
-        <q-table
-            class="todo-table"
-            title="ToDos"
-            :rows="rows"
-            :columns="columns"
-            row-key="id"
-            fullscreen
-            virtual-scroll
-            :virtual-scroll-sticky-size-start="48"
-            v-model:pagination="pagination"
-            :rows-per-page-options="[0]"
-        />
-    </div>
+        <Suspense>
+            <q-table
+                class="todo-table"
+                title="ToDos"
+                :rows="rows"
+                :columns="columns"
+                row-key="id"
+                fullscreen
+                virtual-scroll
+                :virtual-scroll-sticky-size-start="48"
+                v-model:pagination="pagination"
+                :rows-per-page-options="[0]"
+            />
+        </Suspense>
 
-    <q-page-sticky position="bottom" :offset="[18, 18]">
-        <q-btn v-ripple fab icon="add" color="accent"/>
-    </q-page-sticky>
+        <q-page-sticky position="bottom" :offset="[18, 18]">
+            <q-btn v-ripple fab icon="add" color="accent"/>
+        </q-page-sticky>
+    </div>
 </template>
 
-<script>
+<script lang="ts">
 import {ref} from 'vue';
+import {Todo, User} from '../../src-electron/orm/entity/entities';
 
 const columns = [
     {
@@ -38,38 +41,50 @@ const columns = [
         field: 'description',
     },
     {name: 'issued_by', align: 'left', label: 'Für', field: 'issued_by', sortable: true},
-    {name: 'assigned_to', label: 'Zugewiesen zu', field: 'assigned_to'},
-    {name: 'deadline', align: 'left', label: 'Zu erledigen bis', field: 'deadline', sortable: true},
+    {
+        name: 'assigned_to',
+        align: 'left',
+        label: 'Zugewiesen zu',
+        // Todo: wird nicht angezeigt
+        field: async (row: Todo) => getUser(row.UserId).name,
+        sortable: true,
+    },
+    {
+        name: 'created_at',
+        align: 'left',
+        label: 'Erstellt am',
+        field: (row: Todo) => new Date(row.createdAt).toLocaleString('de'),
+        sortable: true
+    },
+    {
+        name: 'deadline',
+        align: 'left',
+        label: 'Zu erledigen bis',
+        field: (row: Todo) => new Date(row.deadline).toLocaleString('de'),
+        sortable: true
+    },
 ];
 
 let rows = [];
 
-async function getRows() {
-    return window.myAPI.findAllTodos();
-}
-
-async function fillRows() {
-    console.log('Getting rows');
-    let result = await getRows();
-
-    console.log('Got rows.');
+async function fillRows(): Promise<Todo[]> {
+    let result = await window.myAPI.findAllTodos();
 
     result.forEach((o, i, a) => {
         a[i] = a[i].dataValues;
     });
 
-    console.log(result);
-    console.log('Printed rows.');
-
     return result;
 }
 
+async function getUser(id: number): User {
+    const user = await window.myAPI.findUserById(id);
+    return user.dataValues;
+}
+
 export default {
-    // Todo: can't be async
     async setup() {
         rows = await fillRows();
-
-        console.log(rows)
 
         return {
             columns,
@@ -87,9 +102,6 @@ export default {
     /* height or max-height is important */
     max-height: 1080px
 
-    /*.q-table__top, */
-    /*.q-table__bottom,*/
-    /*thead tr:first-child th*/
     /* bg color is important for th; just specify one */
     background-color: #fff
 
@@ -97,6 +109,45 @@ export default {
         position: sticky
         z-index: 1
     /* this will be the loading indicator */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

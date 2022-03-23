@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
-import { User, Todo } from './orm/entity/entities';
+import { Todo, User } from './orm/entity/entities';
 import { logger } from './logger/logger';
 
 /**
@@ -23,6 +23,7 @@ import { logger } from './logger/logger';
 export interface IMyAPI {
     findAllTodos: () => Todo[];
     findAllUsers: () => User[];
+    findUserById: (id: number) => User;
 }
 
 declare global {
@@ -39,5 +40,9 @@ contextBridge.exposeInMainWorld('myAPI', {
     findAllUsers: () => {
         logger.info('Finding all users.');
         return ipcRenderer.invoke('findAllUsers');
+    },
+    findUserById: (id) => {
+        if (id) return ipcRenderer.invoke('findUserById', id);
+        return undefined;
     },
 });

@@ -1,6 +1,6 @@
 <template>
     <q-page class="row items-center justify-evenly">
-        <TodoTable></TodoTable>
+        <Suspense><TodoTable/></Suspense>
     </q-page>
 </template>
 

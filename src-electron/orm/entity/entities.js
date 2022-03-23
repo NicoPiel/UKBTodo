@@ -1,10 +1,9 @@
-import {DataTypes, Model} from 'sequelize';
-import {sequelize} from '../../utility';
+import { DataTypes, Model } from 'sequelize';
+import { sequelize } from '../../utility';
 
 // Models
 
-class User extends Model {
-}
+class User extends Model {}
 
 User.init(
     {
@@ -48,7 +47,7 @@ Todo.init(
             type: DataTypes.STRING,
         },
         deadline: {
-            type: DataTypes.DATEONLY,
+            type: DataTypes.DATE,
         },
     },
     {
@@ -61,7 +60,7 @@ Todo.init(
 
 Todo.belongsTo(User, {
     foreignKey: {
-        name: 'assigned_to',
+        type: DataTypes.INTEGER,
     },
 });
 
