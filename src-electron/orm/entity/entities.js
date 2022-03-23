@@ -1,9 +1,11 @@
-import { DataTypes, Model } from 'sequelize';
-import { sequelize } from '../../utility';
+import {DataTypes, Model} from 'sequelize';
+import {sequelize} from '../../utility';
 
 // Models
 
-class User extends Model {}
+class User extends Model {
+}
+
 User.init(
     {
         id: {
@@ -29,6 +31,7 @@ User.init(
 );
 
 class Todo extends Model {}
+
 Todo.init(
     {
         id: {
@@ -56,12 +59,11 @@ Todo.init(
 
 // Relationships
 
-/*User.hasMany(Todo);
 Todo.belongsTo(User, {
     foreignKey: {
         name: 'assigned_to',
     },
-});*/
+});
 
 // Export
 

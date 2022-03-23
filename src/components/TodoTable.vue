@@ -1,12 +1,14 @@
 <template>
     <div class="q-pa-md">
         <q-table
+            class="todo-table"
             title="ToDos"
             :rows="rows"
             :columns="columns"
             row-key="id"
             fullscreen
             virtual-scroll
+            :virtual-scroll-sticky-size-start="48"
             v-model:pagination="pagination"
             :rows-per-page-options="[0]"
         />
@@ -14,48 +16,53 @@
 </template>
 
 <script lang="ts">
-import {Todo} from '../../src-electron/orm/entity/entities';
 import {ref} from 'vue';
 
 const columns = [
     {
         name: 'id',
         label: '#',
-        field: (row) => row.dataValues.id,
+        required: true,
+        field: 'id',
+        sortable: true
     },
     {
         name: 'description',
         required: true,
         label: 'Beschreibung',
         align: 'left',
-        field: (row) => row.dataValues.description,
+        field: 'description',
     },
-    {name: 'issued_by', align: 'left', label: 'Für', field: (row) => row.dataValues.issued_by, sortable: true},
-    //{name: 'assigned_to', label: 'Zugewiesen zu', field: (row: Todo) => row.assigned_to, sortable: true},
-    {name: 'deadline', align: 'left', label: 'Zu erledigen bis', field: (row) => row.dataValues.deadline, sortable: true},
+    {name: 'issued_by', align: 'left', label: 'Für', field: 'issued_by', sortable: true},
+    {name: 'assigned_to', label: 'Zugewiesen zu', field: 'assigned_to'},
+    {name: 'deadline', align: 'left', label: 'Zu erledigen bis', field: 'deadline', sortable: true},
 ];
 
-// Todo: This is the issue
+let rows = [];
 
 async function getRows() {
     return window.myAPI.findAllTodos();
 }
 
+async function fillRows() {
+    console.log('Getting rows');
+    let result = await getRows();
+
+    console.log('Got rows.');
+
+    result.forEach((o, i, a) => {
+        a[i] = a[i].dataValues;
+    });
+
+    console.log(result);
+    console.log('Printed rows.');
+
+    return result;
+}
 
 export default {
     async setup() {
-       console.log('Getting rows');
-        const rows = await getRows();
-
-        console.log('Got rows.');
-
-        for (const row of rows) {
-            console.log(row.dataValues.id);
-        }
-
-        console.log(rows);
-        console.log('Printed rows.');
-
+        rows = await fillRows();
 
         return {
             columns,
@@ -67,3 +74,36 @@ export default {
     },
 };
 </script>
+
+<style lang="sass">
+.todo-table
+    /* height or max-height is important */
+    max-height: 1080px
+
+    .q-table__top,
+    .q-table__bottom,
+    thead tr:first-child th
+    /* bg color is important for th; just specify one */
+    background-color: #fff
+
+    thead tr th
+        position: sticky
+        z-index: 1
+    /* this will be the loading indicator */
+
+
+
+
+
+
+
+
+
+
+    thead tr:last-child th
+        /* height of all previous header rows */
+        top: 48px
+
+    thead tr:first-child th
+        top: 0
+</style>

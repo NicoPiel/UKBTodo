@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, nativeTheme } from 'electron';
+import { app, BrowserWindow, ipcMain, nativeTheme, session } from 'electron';
 import * as os from 'os';
 import * as path from 'path';
 import { logger } from './logger/logger';
@@ -63,6 +63,22 @@ function createWindow() {
 }
 
 app.whenReady().then(async () => {
+    session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+        callback({
+            responseHeaders: {
+                ...details.responseHeaders,
+                'Content-Security-Policy': [
+                    "default-src 'none'" +
+                        " script-src 'self'" +
+                        " connect-src 'self'" +
+                        " img-src 'self'" +
+                        " style-src 'self' 'unsafe-inline'" +
+                        " font-src 'self'",
+                ],
+            },
+        });
+    });
+
     catchEvents();
     await setup();
 
@@ -84,21 +100,22 @@ app.on('activate', () => {
 async function setup() {
     try {
         try {
-            await User.sync({ force: true });
+            await User.sync({ alter: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Users.');
             logger.log('error', error);
         }
 
         try {
-            await Todo.sync({ force: true });
+            await Todo.sync({ alter: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Todos.');
             logger.log('error', error);
         }
 
         await createDefaultUsers();
-        await createDefaultTodos();
+
+        if (process.env.DEBUGGING) await createDefaultTodos();
 
         logger.info('Done.');
     } catch (error) {
@@ -109,7 +126,7 @@ async function setup() {
 async function createDefaultUsers() {
     const usersCount = await User.count();
 
-    if (usersCount === 0) {
+    if (usersCount == 0) {
         try {
             await sequelize.transaction(async (t) => {
                 try {
@@ -118,7 +135,7 @@ async function createDefaultUsers() {
                         email: 'dragica.kalakovic@ukbonn.de',
                     });
                     await User.create({
-                        name: 'Kathi',
+                        name: 'Katharina',
                         email: 'katharina.mueller@ukbonn.de',
                     });
                     await User.create({
@@ -146,33 +163,19 @@ async function createDefaultUsers() {
 async function createDefaultTodos() {
     const todoCount = await Todo.count();
 
-    if (todoCount === 0) {
+    if (todoCount == 0) {
         try {
             await sequelize.transaction(async (t) => {
-                try {
-                    await Todo.create({
-                        description: 'Beispiel',
-                        issued_by: 'Beispiel',
-                    });
-                    await Todo.create({
-                        description: 'Beispiel',
-                        issued_by: 'Beispiel',
-                    });
-                    await Todo.create({
-                        description: 'Beispiel',
-                        issued_by: 'Beispiel',
-                    });
-                    await Todo.create({
-                        description: 'Beispiel',
-                        issued_by: 'Beispiel',
-                    });
-                    await Todo.create({
-                        description: 'Beispiel',
-                        issued_by: 'Beispiel',
-                    });
-                } catch (error) {
-                    logger.log('error', 'Something went wrong during todo creation');
-                    logger.log('error', error);
+                for (let i = 0; i < 30; i++) {
+                    try {
+                        await Todo.create({
+                            description: 'Beispiel',
+                            issued_by: 'Beispiel',
+                        });
+                    } catch (error) {
+                        logger.log('error', 'Something went wrong during todo creation');
+                        logger.log('error', error);
+                    }
                 }
             });
 

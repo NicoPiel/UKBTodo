@@ -3,11 +3,24 @@
     "editor.guides.bracketPairs": true,
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "rvest.vs-code-prettier-eslint",
-    "editor.codeActionsOnSave": ["source.fixAll.eslint"],
-    "eslint.validate": ["javascript", "javascriptreact", "typescript", "vue"],
+    "editor.codeActionsOnSave": [
+        "source.fixAll.eslint"
+    ],
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        "typescript",
+        "vue"
+    ],
     "typescript.tsdk": "node_modules/typescript/lib",
-    "prettier.configPath": ".prettierrc",
     "prettier.endOfLine": "crlf",
     "prettier.singleQuote": true,
-    "editor.formatOnPaste": true
+    "editor.formatOnPaste": true,
+    "eslint.run": "onSave",
+    "prettier.configPath": ".prettierrc",
+    "vetur.format.defaultFormatter.js": "prettier-eslint",
+    "vetur.format.defaultFormatter.ts": "prettier-tslint",
+    "eslint.lintTask.options": ".eslintrc.js",
+    "eslint.packageManager": "yarn",
+    "eslint.useESLintClass": true
 }
