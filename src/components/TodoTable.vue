@@ -1,18 +1,30 @@
 <template>
     <div class="q-pa-md">
         <Suspense>
-            <q-table
-                class="todo-table"
-                title="ToDos"
-                :rows="rows"
-                :columns="columns"
-                row-key="id"
-                fullscreen
-                virtual-scroll
-                :virtual-scroll-sticky-size-start="48"
-                v-model:pagination="pagination"
-                :rows-per-page-options="[0]"
-            />
+            <template #default>
+                <q-table
+                    class="todo-table"
+                    title="ToDos"
+                    :rows="rows"
+                    :columns="columns"
+                    row-key="id"
+                    fullscreen
+                    virtual-scroll
+                    :virtual-scroll-sticky-size-start="48"
+                    v-model:pagination="pagination"
+                    :rows-per-page-options="[0]"
+                />
+            </template>
+            <template #fallback>
+                <q-circular-progress
+                    indeterminate
+                    size="50px"
+                    :thickness="0.22"
+                    color="lime"
+                    track-color="grey-3"
+                    class="q-ma-md"
+                />
+            </template>
         </Suspense>
 
         <q-page-sticky position="bottom" :offset="[18, 18]">
@@ -23,7 +35,7 @@
 
 <script lang="ts">
 import {ref} from 'vue';
-import {Todo, User} from '../../src-electron/orm/entity/entities';
+import {Todo} from '../../src-electron/orm/entity/entities';
 
 const columns = [
     {
@@ -46,7 +58,7 @@ const columns = [
         align: 'left',
         label: 'Zugewiesen zu',
         // Todo: wird nicht angezeigt
-        field: async (row: Todo) => getUser(row.UserId).name,
+        field: 'UserId',
         sortable: true,
     },
     {
@@ -70,16 +82,17 @@ let rows = [];
 async function fillRows(): Promise<Todo[]> {
     let result = await window.myAPI.findAllTodos();
 
-    result.forEach((o, i, a) => {
+    result.forEach(async (_, i, a) => {
         a[i] = a[i].dataValues;
+        a[i].UserId = await getUsername(a[i].UserId);
     });
 
     return result;
 }
 
-async function getUser(id: number): User {
+async function getUsername(id: number): Promise<string> {
     const user = await window.myAPI.findUserById(id);
-    return user.dataValues;
+    return user.dataValues.name;
 }
 
 export default {
@@ -109,6 +122,20 @@ export default {
         position: sticky
         z-index: 1
     /* this will be the loading indicator */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

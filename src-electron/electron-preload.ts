@@ -1,6 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import { Todo, User } from './orm/entity/entities';
-import { logger } from './logger/logger';
 
 /**
  * This file is used specifically for security reasons.
@@ -33,14 +32,8 @@ declare global {
 }
 
 contextBridge.exposeInMainWorld('myAPI', {
-    findAllTodos: () => {
-        logger.info('Finding all todos.');
-        return ipcRenderer.invoke('findAllTodos');
-    },
-    findAllUsers: () => {
-        logger.info('Finding all users.');
-        return ipcRenderer.invoke('findAllUsers');
-    },
+    findAllTodos: () => ipcRenderer.invoke('findAllTodos'),
+    findAllUsers: () => ipcRenderer.invoke('findAllUsers'),
     findUserById: (id) => {
         if (id) return ipcRenderer.invoke('findUserById', id);
         return undefined;
