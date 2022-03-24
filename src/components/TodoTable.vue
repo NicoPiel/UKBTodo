@@ -1,35 +1,26 @@
 <template>
     <div class="q-pa-md">
-        <Suspense>
-            <template #default>
-                <q-table
-                    class="todo-table"
-                    title="ToDos"
-                    :rows="rows"
-                    :columns="columns"
-                    row-key="id"
-                    fullscreen
-                    virtual-scroll
-                    :virtual-scroll-sticky-size-start="48"
-                    v-model:pagination="pagination"
-                    :rows-per-page-options="[0]"
-                />
-            </template>
-            <template #fallback>
-                <q-circular-progress
-                    indeterminate
-                    size="50px"
-                    :thickness="0.22"
-                    color="lime"
-                    track-color="grey-3"
-                    class="q-ma-md"
-                />
-            </template>
-        </Suspense>
+        <q-table
+            class="todo-table"
+            title="ToDos"
+            :rows="rows"
+            :columns="columns"
+            row-key="id"
+            style="height: 65vw; width: 95vw;"
+            virtual-scroll
+            :virtual-scroll-sticky-size-start="48"
+            v-model:pagination="pagination"
+            :rows-per-page-options="[0]"
+        >
 
-        <q-page-sticky position="bottom" :offset="[18, 18]">
-            <q-btn v-ripple fab icon="add" color="accent"/>
-        </q-page-sticky>
+            <template #body-cell-actions="props">
+                <q-td key="actions" :props="props" auto-width>
+                    <q-btn size="md" color="secondary" round dense icon="done"/>
+                    <q-btn to="/todo/:id/edit" size="md" color="secondary" round dense icon="edit"/>
+                </q-td>
+            </template>
+
+        </q-table>
     </div>
 </template>
 
@@ -52,12 +43,12 @@ const columns = [
         align: 'left',
         field: 'description',
     },
+    {name: 'info', align: 'left', label: 'Zusatzinfo', field: 'info'},
     {name: 'issued_by', align: 'left', label: 'Für', field: 'issued_by', sortable: true},
     {
         name: 'assigned_to',
         align: 'left',
         label: 'Zugewiesen zu',
-        // Todo: wird nicht angezeigt
         field: 'UserId',
         sortable: true,
     },
@@ -74,6 +65,10 @@ const columns = [
         label: 'Zu erledigen bis',
         field: (row: Todo) => new Date(row.deadline).toLocaleString('de'),
         sortable: true
+    },
+    {
+        name: 'actions',
+        label: 'Optionen'
     },
 ];
 
@@ -95,6 +90,10 @@ async function getUsername(id: number): Promise<string> {
     return user.dataValues.name;
 }
 
+async function trash(id) {
+    await window.myAPI.deleteTodoById(id);
+}
+
 export default {
     async setup() {
         rows = await fillRows();
@@ -109,96 +108,3 @@ export default {
     },
 };
 </script>
-
-<style lang="sass">
-.todo-table
-    /* height or max-height is important */
-    max-height: 1080px
-
-    /* bg color is important for th; just specify one */
-    background-color: #fff
-
-    thead tr th
-        position: sticky
-        z-index: 1
-    /* this will be the loading indicator */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    thead tr:last-child th
-        /* height of all previous header rows */
-        top: 48px
-
-    thead tr:first-child th
-        top: 0
-</style>

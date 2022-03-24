@@ -15,6 +15,10 @@
                 />
             </template>
         </Suspense>
+
+        <q-page-sticky position="bottom" :offset="[96, 96]">
+            <q-btn to="/todo/new" v-ripple fab icon="add" color="accent"/>
+        </q-page-sticky>
     </q-page>
 </template>
 

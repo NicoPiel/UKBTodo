@@ -43,6 +43,9 @@ Todo.init(
         description: {
             type: DataTypes.STRING,
         },
+        info: {
+            type: DataTypes.STRING,
+        },
         issued_by: {
             type: DataTypes.STRING,
         },

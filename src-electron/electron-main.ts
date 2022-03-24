@@ -29,6 +29,10 @@ function catchEvents() {
         logger.info('handling findUserById event');
         return User.findOne({ where: { id: id } });
     });
+    ipcMain.handle('deleteTodoById', (event, id) => {
+        logger.info('handling deleteTodoById event');
+        return Todo.destroy({ where: { id: id } });
+    });
 }
 
 let mainWindow;
@@ -134,22 +138,24 @@ async function createDefaultUsers() {
         try {
             await sequelize.transaction(async (t) => {
                 try {
-                    await User.create({
-                        name: 'Dragi',
-                        email: 'dragica.kalakovic@ukbonn.de',
-                    });
-                    await User.create({
-                        name: 'Katharina',
-                        email: 'katharina.mueller@ukbonn.de',
-                    });
-                    await User.create({
-                        name: 'Hannah',
-                        email: 'hannah.langenohl@ukbonn.de',
-                    });
-                    await User.create({
-                        name: 'Ina',
-                        email: 'ina.olschewski@ukbonn.de',
-                    });
+                    await User.bulkCreate([
+                        {
+                            name: 'Dragi',
+                            email: 'dragica.kalakovic@ukbonn.de',
+                        },
+                        {
+                            name: 'Katharina',
+                            email: 'katharina.mueller@ukbonn.de',
+                        },
+                        {
+                            name: 'Hannah',
+                            email: 'hannah.langenohl@ukbonn.de',
+                        },
+                        {
+                            name: 'Ina',
+                            email: 'ina.olschewski@ukbonn.de',
+                        },
+                    ]);
                 } catch (error) {
                     logger.log('error', 'Something went wrong during user creation');
                     logger.log('error', error);
@@ -173,8 +179,9 @@ async function createDefaultTodos() {
                 for (let i = 0; i < 10; i++) {
                     try {
                         const newTodo: Todo = Todo.build({
-                            description: 'Beispiel',
-                            issued_by: 'Beispiel',
+                            description: 'Beispielbeschreibung',
+                            issued_by: 'Beispielmensch',
+                            info: 'Beispielinfo',
                             deadline: new Date(2022, 5, 1),
                         });
 

@@ -20,9 +20,10 @@ import { Todo, User } from './orm/entity/entities';
  */
 
 export interface IMyAPI {
-    findAllTodos: () => Todo[];
-    findAllUsers: () => User[];
-    findUserById: (id: number) => User;
+    findAllTodos: () => Promise<Todo[]>;
+    findAllUsers: () => Promise<User[]>;
+    findUserById: (id: number) => Promise<User>;
+    deleteTodoById: (id: number) => Promise<number>;
 }
 
 declare global {
@@ -34,6 +35,7 @@ declare global {
 contextBridge.exposeInMainWorld('myAPI', {
     findAllTodos: () => ipcRenderer.invoke('findAllTodos'),
     findAllUsers: () => ipcRenderer.invoke('findAllUsers'),
+    deleteTodoById: (id) => ipcRenderer.invoke('deleteTodoById', id),
     findUserById: (id) => {
         if (id) return ipcRenderer.invoke('findUserById', id);
         return undefined;
