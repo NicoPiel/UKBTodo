@@ -16,7 +16,7 @@
             <template #body-cell-actions="props">
                 <q-td key="actions" :props="props" auto-width>
                     <q-btn size="md" color="secondary" round dense icon="done"/>
-                    <q-btn to="/todo/:id/edit" size="md" color="secondary" round dense icon="edit"/>
+                    <q-btn to="/todo/{{ props.row.id }}/edit" size="md" color="secondary" round dense icon="edit"/>
                 </q-td>
             </template>
 
@@ -90,7 +90,7 @@ async function getUsername(id: number): Promise<string> {
     return user.dataValues.name;
 }
 
-async function trash(id) {
+async function destroy(id) {
     await window.myAPI.deleteTodoById(id);
 }
 
