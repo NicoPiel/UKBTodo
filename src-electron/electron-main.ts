@@ -33,6 +33,10 @@ function catchEvents() {
         logger.info('handling deleteTodoById event');
         return Todo.destroy({ where: { id: id } });
     });
+    ipcMain.handle('reloadFocusedWindow', () => {
+        logger.info('reloading..');
+        BrowserWindow.getFocusedWindow().reload();
+    });
 }
 
 let mainWindow;

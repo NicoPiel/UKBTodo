@@ -3,7 +3,7 @@
         <q-table
             class="todo-table"
             title="ToDos"
-            :rows="rows"
+            :rows="rowStatus"
             :columns="columns"
             row-key="id"
             style="height: 65vw; width: 95vw;"
@@ -15,10 +15,12 @@
 
             <template #body-cell-actions="props">
                 <q-td key="actions" :props="props" auto-width>
-                    <q-btn size="md" color="secondary" round dense icon="done"/>
+                    <q-btn size="md" color="secondary" round dense icon="done"
+                           @click="async () => await destroy(props.row.id)"/>
                     <q-btn to="/todo/{{ props.row.id }}/edit" size="md" color="secondary" round dense icon="edit"/>
                 </q-td>
             </template>
+
 
         </q-table>
     </div>
@@ -72,7 +74,7 @@ const columns = [
     },
 ];
 
-let rows = [];
+let rows;
 
 async function fillRows(): Promise<Todo[]> {
     let result = await window.myAPI.findAllTodos();
@@ -92,18 +94,24 @@ async function getUsername(id: number): Promise<string> {
 
 async function destroy(id) {
     await window.myAPI.deleteTodoById(id);
+    console.log('Deleted row ' + id);
+    window.myAPI.reloadFocusedWindow();
 }
 
 export default {
     async setup() {
-        rows = await fillRows();
+        const rowStatus = ref([]);
+
+        rowStatus.value = await fillRows();
 
         return {
             columns,
             rows,
+            rowStatus,
             pagination: ref({
                 rowsPerPage: 0,
             }),
+            destroy
         };
     },
 };

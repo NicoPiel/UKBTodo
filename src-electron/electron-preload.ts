@@ -24,6 +24,7 @@ export interface IMyAPI {
     findAllUsers: () => Promise<User[]>;
     findUserById: (id: number) => Promise<User>;
     deleteTodoById: (id: number) => Promise<number>;
+    reloadFocusedWindow: () => void;
 }
 
 declare global {
@@ -40,4 +41,5 @@ contextBridge.exposeInMainWorld('myAPI', {
         if (id) return ipcRenderer.invoke('findUserById', id);
         return undefined;
     },
+    reloadFocusedWindow: () => ipcRenderer.invoke('reloadFocusedWindow'),
 });

@@ -81,7 +81,7 @@ module.exports = configure(function (/* ctx */) {
 
         // Full list of options: https://v2.quasar.dev/quasar-cli-vite/quasar-config-js#devServer
         devServer: {
-            // https: true
+            https: true,
             open: true, // opens browser window automatically
             fs: {
                 strict: false,
@@ -173,7 +173,7 @@ module.exports = configure(function (/* ctx */) {
 
             inspectPort: 5858,
 
-            bundler: 'packager', // 'packager' or 'builder'
+            bundler: 'builder', // 'packager' or 'builder'
 
             packager: {
                 // https://github.com/electron-userland/electron-packager/blob/master/docs/api.md#options
@@ -190,6 +190,7 @@ module.exports = configure(function (/* ctx */) {
                 // https://www.electron.build/configuration/configuration
 
                 appId: 'ukbtodo',
+                nodeIntegration: true,
             },
         },
 
