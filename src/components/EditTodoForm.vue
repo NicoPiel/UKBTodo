@@ -8,13 +8,16 @@
             <q-date v-model="date" mask="YYYY-MM-DD HH:mm"/>
             <q-time v-model="date" mask="YYYY-MM-DD HH:mm"/>
         </div>
-        <q-btn label="Erstellen" color="primary" @click="submit" ripple rounded to="/"></q-btn>
+        <q-btn label="Speichern" color="primary" @click="submit" ripple rounded to="/"></q-btn>
     </div>
 </template>
 
 <script lang="ts">
 import {Ref, ref, UnwrapRef} from 'vue';
-import {User} from 'app/src-electron/orm/entity/entities';
+import {Todo, User} from 'app/src-electron/orm/entity/entities';
+import {useRoute} from 'vue-router';
+
+let todo: Todo;
 
 const description: Ref<UnwrapRef<string>> = ref('');
 const info: Ref<UnwrapRef<string>> = ref('');
@@ -32,7 +35,7 @@ async function submit() {
         UserId: assigned_to?.value
     };
 
-    await window.myAPI.createTodo(newTodo);
+    await window.myAPI.updateTodo(todo.id, newTodo);
 }
 
 async function getUsers(): Promise<User[]> {
@@ -41,7 +44,19 @@ async function getUsers(): Promise<User[]> {
 
 export default {
     async setup() {
+        const route = useRoute();
+        todo = await window.myAPI.findTodoById(route.params.id);
+        todo = todo.dataValues;
+
+        description.value = todo.description;
+        issued_by.value = todo.issued_by;
+        info.value = todo.info;
+        assigned_to.value = todo.UserId;
+        date.value = todo.deadline;
+
         const users: User[] = await getUsers();
+
+        options = [];
 
         users.forEach((u, i, a) => {
             const user = u.dataValues;
@@ -59,6 +74,7 @@ export default {
             assigned_to,
             date,
             options,
+            todo,
             submit,
             getUsers
         }

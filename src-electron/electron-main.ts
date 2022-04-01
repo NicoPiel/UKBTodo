@@ -21,6 +21,32 @@ function catchEvents() {
         logger.info('handling findAllTodos event');
         return Todo.findAll();
     });
+    ipcMain.handle('findTodoById', (event, id) => {
+        logger.info('handling findAllTodos event');
+        return Todo.findOne({ where: { id: id } });
+    });
+    ipcMain.handle('createTodo', async (event, todo) => {
+        logger.info('handling createTodo event');
+        await sequelize.transaction(async (t) => {
+            try {
+                await Todo.create(todo);
+            } catch (error) {
+                logger.log('Something went wrong while creating a new todo.');
+                logger.log(error);
+            }
+        });
+    });
+    ipcMain.handle('updateTodo', async (event, id, todo) => {
+        logger.info('handling updateTodo event');
+        await sequelize.transaction(async (t) => {
+            try {
+                await Todo.update(todo, { where: { id: id } });
+            } catch (error) {
+                logger.log('Something went wrong while updating a todo.');
+                logger.log(error);
+            }
+        });
+    });
     ipcMain.handle('findAllUsers', () => {
         logger.info('handling findAllUsers event');
         return User.findAll();
@@ -119,7 +145,7 @@ async function setup() {
         }
 
         try {
-            await Todo.sync({ force: true });
+            await Todo.sync({ alter: true });
         } catch (error) {
             logger.log('error', 'Something went wrong while syncing Todos.');
             logger.log('error', error);
@@ -158,6 +184,10 @@ async function createDefaultUsers() {
                         {
                             name: 'Ina',
                             email: 'ina.olschewski@ukbonn.de',
+                        },
+                        {
+                            name: 'Linda',
+                            email: 'linda.@ukbonn.de',
                         },
                     ]);
                 } catch (error) {

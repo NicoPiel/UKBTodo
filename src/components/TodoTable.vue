@@ -6,18 +6,19 @@
             :rows="rowStatus"
             :columns="columns"
             row-key="id"
-            style="height: 65vw; width: 95vw;"
+            style="height: 65vw; width: 95vw; max-height: 65vw; max-width: 95vw;"
             virtual-scroll
             :virtual-scroll-sticky-size-start="48"
             v-model:pagination="pagination"
             :rows-per-page-options="[0]"
+            wrap-cells
         >
 
             <template #body-cell-actions="props">
                 <q-td key="actions" :props="props" auto-width>
                     <q-btn size="md" color="secondary" round dense icon="done"
                            @click="async () => await destroy(props.row.id)"/>
-                    <q-btn to="/todo/{{ props.row.id }}/edit" size="md" color="secondary" round dense icon="edit"/>
+                    <q-btn @click="editTodo(props.row.id)" size="md" color="secondary" round dense icon="edit"/>
                 </q-td>
             </template>
 
@@ -29,6 +30,9 @@
 <script lang="ts">
 import {ref} from 'vue';
 import {Todo} from '../../src-electron/orm/entity/entities';
+import {useRouter} from 'vue-router';
+
+let router;
 
 const columns = [
     {
@@ -98,8 +102,14 @@ async function destroy(id) {
     window.myAPI.reloadFocusedWindow();
 }
 
+async function editTodo(id: number) {
+    await router.push('/todo/' + id + '/edit');
+}
+
 export default {
     async setup() {
+        router = useRouter();
+
         const rowStatus = ref([]);
 
         rowStatus.value = await fillRows();
@@ -111,7 +121,8 @@ export default {
             pagination: ref({
                 rowsPerPage: 0,
             }),
-            destroy
+            destroy,
+            editTodo,
         };
     },
 };
