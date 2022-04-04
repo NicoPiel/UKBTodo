@@ -73,6 +73,13 @@ const columns = [
         sortable: true
     },
     {
+        name: 'created_by',
+        align: 'left',
+        label: 'Erstellt durch',
+        field: 'created_by',
+        sortable: true,
+    },
+    {
         name: 'actions',
         label: 'Optionen'
     },

@@ -49,6 +49,9 @@ Todo.init(
         issued_by: {
             type: DataTypes.STRING,
         },
+        created_by: {
+            type: DataTypes.STRING,
+        },
         deadline: {
             type: DataTypes.DATE,
         },
